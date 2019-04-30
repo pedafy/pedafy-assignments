@@ -2,8 +2,9 @@
 # and https://cloud.google.com/appengine/docs/flexible/go/reference/app-yaml for more info
 
 runtime: go
+api_version: go1
 env: flex
-service: default
+service: tig
 
 # The settings below are to reduce costs during testing and not appropriate for production use.
 # You would obviously want to increase the values for computing resources and look into auto scaling when running production workloads.
@@ -17,6 +18,4 @@ resources:
 
 handlers:
   - url: /.*
-    secure: always
-    redirect_http_response_code: 301
-    script: auto
+    script: _go_app

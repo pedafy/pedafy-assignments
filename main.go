@@ -8,7 +8,7 @@ import (
 
 func main() {
 
-	http.HandleFunc("/", hello)
+	http.HandleFunc("/tig", hello)
 
 	log.Print("Go server listening on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
@@ -23,7 +23,7 @@ func hello(w http.ResponseWriter, r *http.Request) {
 	}
 
 	dictionary := make(map[string]string)
-	dictionary["message"] = "Hello from Go!"
+	dictionary["message"] = "Welcome to the Assignement service"
 
 	json, _ := json.Marshal(dictionary)
 
