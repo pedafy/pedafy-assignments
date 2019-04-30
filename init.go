@@ -1,4 +1,4 @@
-package pedafyassignments
+package main
 
 import (
 	"fmt"
