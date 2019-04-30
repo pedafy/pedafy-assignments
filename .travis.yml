@@ -7,12 +7,11 @@ script:
   - go build -o server
   - go clean
 
-# current API version: 1.0.0
+# current version: 1
 deploy:
   provider: gae
   keyfile: pedafy-251c5ecfe2ec.json
   project: pedafy
-  version: v1
-  no_promote: true
-  no_stop_previous_version: true
+  no_promote: false                   # If new version: true (def: false)
+  no_stop_previous_version: false     # If new version: true (def: false)
   on: master
