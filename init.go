@@ -3,14 +3,13 @@ package pedafytig
 import (
 	"fmt"
 	"net/http"
-
-	"google.golang.org/appengine"
 )
 
 func init() {
-	http.HandleFunc("/", handler)
+	http.HandleFunc("/", apiHomeH)
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello, world! Are we running in production: %v\n", !appengine.IsDevAppServer())
+func apiHomeH(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json;charset=utf8")
+	fmt.Fprint(w, `{"status":"running"}`)
 }
