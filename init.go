@@ -35,12 +35,6 @@ func initDB(user, password, dbname, connectionName string) {
 
 func apiHomeH(w http.ResponseWriter, r *http.Request) {
 
-	// only '/' url
-	if r.RequestURI != "/" {
-		http.NotFound(w, r)
-		return
-	}
-
 	// if no db, create one
 	if db == nil {
 		ctx := appengine.NewContext(r)
