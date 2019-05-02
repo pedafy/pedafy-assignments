@@ -18,12 +18,6 @@ resources:
   disk_size_gb: 10
 
 handlers:
-  # serve service favicon
-  - url: /favicon\.ico
-    static_files: public/icon/favicon.ico
-    upload: public/icon/favicon.ico
-    secure: always
-
   # serve static file (i.e: javascript, css, image, ...)
   - url: /static
     static_dir: public
