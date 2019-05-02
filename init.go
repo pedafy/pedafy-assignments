@@ -5,11 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 
 	"google.golang.org/appengine"
-
-	"github.com/joho/godotenv"
 
 	// mysql driver
 	_ "github.com/go-sql-driver/mysql"
@@ -18,16 +15,11 @@ import (
 var db *sql.DB
 
 func init() {
-	// Load the environment
-	godotenv.Load(".env")
 
-	var (
-		connectionName = os.Getenv("INSTANCE")
-		user           = os.Getenv("DBUSER")
-		password       = os.Getenv("DBPASS")
-		dbname         = os.Getenv("DBNAME")
-	)
+	http.HandleFunc("/", apiHomeH)
+}
 
+func initDB(user, password, dbname, connectionName string) {
 	var err error
 
 	if appengine.IsDevAppServer() {
@@ -39,15 +31,28 @@ func init() {
 	if err != nil {
 		log.Fatalf("Could not open db: %v", err)
 	}
-
-	http.HandleFunc("/", apiHomeH)
-	http.HandleFunc("/datastore", datastoreH)
 }
 
 func apiHomeH(w http.ResponseWriter, r *http.Request) {
+
+	// only '/' url
+	if r.RequestURI != "/" {
+		http.NotFound(w, r)
+		return
+	}
+
+	// if no db, create one
+	if db == nil {
+		ctx := appengine.NewContext(r)
+		dbInfo, _ := findDatabaseInformation(ctx)
+		initDB(dbInfo.ApiUsername, dbInfo.ApiPass, "pedafy_assignments", dbInfo.InstanceName)
+	}
+
+	// set header for JSON
 	w.Header().Set("Content-Type", "application/json;charset=utf8")
 
-	rows, err := db.Query("SELECT * FROM `test`")
+	// Test database stuff here
+	rows, err := db.Query("SELECT * FROM `status`")
 	if err != nil {
 		log.Fatal(err)
 	}

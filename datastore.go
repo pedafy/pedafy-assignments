@@ -2,12 +2,8 @@ package pedafytig
 
 import (
 	"context"
-	"fmt"
 	"log"
-	"net/http"
-	"os"
 
-	"google.golang.org/appengine"
 	"google.golang.org/appengine/datastore"
 )
 
@@ -42,23 +38,4 @@ func findDatabaseInformation(ctx context.Context) (databaseInformation, error) {
 		return databaseInformation{}, err
 	}
 	return entity, nil
-}
-
-// DEBUG: trying things here
-func datastoreH(w http.ResponseWriter, r *http.Request) {
-	ctx := appengine.NewContext(r)
-	log.Println(appengine.ModuleName(ctx))
-
-	err := createDatabaseInformation(ctx, os.Getenv("DBUSER"), os.Getenv("DBPASS"), os.Getenv("INSTANCE"))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	dbInfo2, err := findDatabaseInformation(ctx)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	fmt.Fprintf(w, "New database information: %q", dbInfo2.ApiUsername)
 }
