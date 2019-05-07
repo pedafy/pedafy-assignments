@@ -1,24 +1,32 @@
-package pedafytig
+package main
 
 import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
-	"github.com/joho/godotenv"
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
 
-	"google.golang.org/appengine"
+	"github.com/pedafy/pedafy-assignments/datastore"
 
 	// mysql driver
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
+	"google.golang.org/appengine"
 )
 
-func init() {
+func main() {
 
-	godotenv.Load(".env")
+	godotenv.Load("../.env")
 
-	http.HandleFunc("/", apiHomeH)
-	http.HandleFunc("/_ah/start", startupH)
+	r := mux.NewRouter()
+	r.HandleFunc("/", apiHomeH)
+	r.HandleFunc("/_ah/start", startupH)
+
+	http.Handle("/", handlers.CombinedLoggingHandler(os.Stderr, r))
+	appengine.Main()
 }
 
 // startupH is the startup handler, Google App Engine requests
@@ -27,7 +35,7 @@ func init() {
 func startupH(w http.ResponseWriter, r *http.Request) {
 	if db == nil {
 		ctx := appengine.NewContext(r)
-		dbInfo, err := findDatabaseInformation(ctx)
+		dbInfo, err := datastore.FindDatabaseInformation(ctx)
 		if err != nil {
 			log.Fatal(err.Error())
 		}

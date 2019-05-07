@@ -1,4 +1,4 @@
-package pedafytig
+package datastore
 
 import (
 	"context"
@@ -10,9 +10,9 @@ import (
 	"google.golang.org/appengine/datastore"
 )
 
-// databaseInformation is a representation of all the information concerning
+// DatabaseInformation is a representation of all the information concerning
 // a database, its name, the login and password
-type databaseInformation struct {
+type DatabaseInformation struct {
 	APIUsername  string `datastore:"API_USER_NAME"`
 	APIPass      string `datastore:"API_USER_PASS"`
 	InstanceName string `datastore:"INSTANCE_NAME"`
@@ -20,8 +20,8 @@ type databaseInformation struct {
 
 // findInformationFromEnv retrieves the database information from the
 // environment, if one or more environment variable is missing an error is returned
-func findInforationFromEnv() (databaseInformation, error) {
-	dbInfo := databaseInformation{
+func findInforationFromEnv() (DatabaseInformation, error) {
+	dbInfo := DatabaseInformation{
 		os.Getenv("USERNAME_DATABASE"),
 		os.Getenv("PASSWORD_DATABASE"),
 		os.Getenv("INSTANCE_DATABASE_NAME"),
@@ -34,24 +34,24 @@ func findInforationFromEnv() (databaseInformation, error) {
 
 // findInformationFromDatastore retrieves the database information (the
 // password, username and the instance name)
-func findInformationFromDatastore(ctx context.Context) (databaseInformation, error) {
-	var dbInfo databaseInformation
+func findInformationFromDatastore(ctx context.Context) (DatabaseInformation, error) {
+	var dbInfo DatabaseInformation
 	q := datastore.NewQuery("DATABASE_INFORMATION").Limit(1)
 	iterator := q.Run(ctx)
 
 	_, err := iterator.Next(&dbInfo)
 
 	if err != nil {
-		return databaseInformation{}, err
+		return DatabaseInformation{}, err
 	}
 	return dbInfo, nil
 }
 
-// findDatabaseInformation retrieves information from either the local
+// FindDatabaseInformation retrieves information from either the local
 // environment or the Google Cloud Datastore, depending if we are running the
 // service in dev or production
-func findDatabaseInformation(ctx context.Context) (databaseInformation, error) {
-	var dbInfo databaseInformation
+func FindDatabaseInformation(ctx context.Context) (DatabaseInformation, error) {
+	var dbInfo DatabaseInformation
 	var err error
 
 	if appengine.IsDevAppServer() {

@@ -1,4 +1,4 @@
-package pedafytig
+package main
 
 import (
 	"database/sql"
