@@ -2,40 +2,62 @@ package pedafytig
 
 import (
 	"context"
-	"log"
+	"errors"
+	"os"
+
+	"google.golang.org/appengine"
 
 	"google.golang.org/appengine/datastore"
 )
 
+// databaseInformation is a representation of all the information concerning
+// a database, its name, the login and password
 type databaseInformation struct {
-	ApiUsername  string `datastore:"API_USER_NAME"`
-	ApiPass      string `datastore:"API_USER_PASS"`
+	APIUsername  string `datastore:"API_USER_NAME"`
+	APIPass      string `datastore:"API_USER_PASS"`
 	InstanceName string `datastore:"INSTANCE_NAME"`
 }
 
-// Create a new database information key
-func createDatabaseInformation(ctx context.Context, username, pass, instance string) error {
-	dbInfo := databaseInformation{username, pass, instance}
-
-	key := datastore.NewIncompleteKey(ctx, "DATABASE_INFORMATION", nil)
-
-	key, err := datastore.Put(ctx, key, &dbInfo)
-	if err != nil {
-		return err
+// findInformationFromEnv retrieves the database information from the
+// environment, if one or more environment variable is missing an error is returned
+func findInforationFromEnv() (databaseInformation, error) {
+	dbInfo := databaseInformation{
+		os.Getenv("USERNAME_DATABASE"),
+		os.Getenv("PASSWORD_DATABASE"),
+		os.Getenv("INSTANCE_DATABASE_NAME"),
 	}
-	return nil
+	if dbInfo.APIPass == "" || dbInfo.APIUsername == "" || dbInfo.InstanceName == "" {
+		return dbInfo, errors.New("Database environment variable are missing")
+	}
+	return dbInfo, nil
 }
 
-// Find on database information
-func findDatabaseInformation(ctx context.Context) (databaseInformation, error) {
+// findInformationFromDatastore retrieves the database information (the
+// password, username and the instance name)
+func findInformationFromDatastore(ctx context.Context) (databaseInformation, error) {
+	var dbInfo databaseInformation
 	q := datastore.NewQuery("DATABASE_INFORMATION").Limit(1)
 	iterator := q.Run(ctx)
 
-	var entity databaseInformation
-	_, err := iterator.Next(&entity)
-	log.Println(entity)
+	_, err := iterator.Next(&dbInfo)
+
 	if err != nil {
 		return databaseInformation{}, err
 	}
-	return entity, nil
+	return dbInfo, nil
+}
+
+// findDatabaseInformation retrieves information from either the local
+// environment or the Google Cloud Datastore, depending if we are running the
+// service in dev or production
+func findDatabaseInformation(ctx context.Context) (databaseInformation, error) {
+	var dbInfo databaseInformation
+	var err error
+
+	if appengine.IsDevAppServer() {
+		dbInfo, err = findInforationFromEnv()
+	} else {
+		dbInfo, err = findInformationFromDatastore(ctx)
+	}
+	return dbInfo, err
 }

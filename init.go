@@ -1,10 +1,11 @@
 package pedafytig
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/joho/godotenv"
 
 	"google.golang.org/appengine"
 
@@ -12,40 +13,34 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-var db *sql.DB
-
 func init() {
 
+	godotenv.Load(".env")
+
 	http.HandleFunc("/", apiHomeH)
+	http.HandleFunc("/_ah/start", startupH)
 }
 
-func initDB(user, password, dbname, connectionName string) {
-	var err error
-
-	if appengine.IsDevAppServer() {
-		db, err = sql.Open("mysql", fmt.Sprintf("%s:%s@tcp([127.0.0.1]:3306)/%s", user, password, dbname))
-	} else {
-		db, err = sql.Open("mysql", fmt.Sprintf("%s:%s@cloudsql(%s)/%s", user, password, connectionName, dbname))
+// startupH is the startup handler, Google App Engine requests
+// this URL ('/_ah/start) when starting the service. It allows us to do all the
+// startup, e.g: initialisation of the database.
+func startupH(w http.ResponseWriter, r *http.Request) {
+	if db == nil {
+		ctx := appengine.NewContext(r)
+		dbInfo, err := findDatabaseInformation(ctx)
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+		initDB(dbInfo.APIUsername, dbInfo.APIPass, "pedafy_assignments", dbInfo.InstanceName)
 	}
 
-	if err != nil {
-		log.Fatalf("Could not open db: %v", err)
-	}
+	w.Write([]byte("ready"))
 }
 
 func apiHomeH(w http.ResponseWriter, r *http.Request) {
-
-	// if no db, create one
-	if db == nil {
-		ctx := appengine.NewContext(r)
-		dbInfo, _ := findDatabaseInformation(ctx)
-		initDB(dbInfo.ApiUsername, dbInfo.ApiPass, "pedafy_assignments", dbInfo.InstanceName)
-	}
-
-	// set header for JSON
 	w.Header().Set("Content-Type", "application/json;charset=utf8")
 
-	// Test database stuff here
+	// DEBUG: Testing database connection here - Dirty code
 	rows, err := db.Query("SELECT * FROM `status`")
 	if err != nil {
 		log.Fatal(err)
