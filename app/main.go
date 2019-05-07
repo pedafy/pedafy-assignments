@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
+	"github.com/pedafy/pedafy-assignments/api/layer"
 
 	"github.com/pedafy/pedafy-assignments/datastore"
 
@@ -17,17 +15,22 @@ import (
 	"google.golang.org/appengine"
 )
 
+const (
+	defaultVersion = layer.Version1
+)
+
 func main() {
+	var srv server
 
 	godotenv.Load("../.env")
 
-	r := mux.NewRouter()
-	r.HandleFunc("/", apiHomeH)
-	r.HandleFunc("/_ah/start", startupH)
+	srv.initAPIHandler()
+	srv.registerHandlers()
 
-	http.Handle("/", handlers.CombinedLoggingHandler(os.Stderr, r))
 	appengine.Main()
 }
+
+// TODO: delete following code:
 
 // startupH is the startup handler, Google App Engine requests
 // this URL ('/_ah/start) when starting the service. It allows us to do all the
