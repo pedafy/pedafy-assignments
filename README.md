@@ -1,5 +1,6 @@
 # pedafy-assignments
-[![Build Status](https://travis-ci.com/pedafy/pedafy-assignments.svg?branch=master)](https://travis-ci.com/pedafy/pedafy-assignments)
+[![build](https://travis-ci.com/pedafy/pedafy-assignments.svg?branch=master)](https://travis-ci.com/pedafy/pedafy-assignments)
+[![codefactor](https://www.codefactor.io/repository/github/pedafy/pedafy-assignments/badge?style=flat-square)](https://www.codefactor.io/repository/github/pedafy/pedafy-assignments)
 
 Assignment service of pedafy
 
