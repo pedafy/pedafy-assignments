@@ -20,12 +20,14 @@ func (s *server) initAPIHandler() {
 		version = defaultVersion
 	}
 	s.APIHandler = layer.NewApiManager(version)
+	s.APIHandler.InitialisationDatabase(version)
 }
 
+// registerHandlers will register all the API's routes
 func (s *server) registerHandlers() {
 	r := mux.NewRouter()
-	r.HandleFunc("/", apiHomeH)
-	r.HandleFunc("/_ah/start", startupH)
+
+	s.APIHandler.RegisterAPIRoutes(r)
 
 	http.Handle("/", handlers.CombinedLoggingHandler(os.Stderr, r))
 }

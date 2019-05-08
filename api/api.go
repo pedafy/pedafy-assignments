@@ -1,6 +1,11 @@
 package api
 
+import (
+	"github.com/gorilla/mux"
+)
+
 // APIHandler interface every version of the API
 type APIHandler interface {
-	Test()
+	RegisterAPIRoutes(r *mux.Router)
+	InitialisationDatabase(versionDB string)
 }

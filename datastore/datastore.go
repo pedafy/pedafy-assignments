@@ -20,7 +20,7 @@ type DatabaseInformation struct {
 
 // findInformationFromEnv retrieves the database information from the
 // environment, if one or more environment variable is missing an error is returned
-func findInforationFromEnv() (DatabaseInformation, error) {
+func findInformationFromEnv() (DatabaseInformation, error) {
 	dbInfo := DatabaseInformation{
 		os.Getenv("USERNAME_DATABASE"),
 		os.Getenv("PASSWORD_DATABASE"),
@@ -55,7 +55,7 @@ func FindDatabaseInformation(ctx context.Context) (DatabaseInformation, error) {
 	var err error
 
 	if appengine.IsDevAppServer() {
-		dbInfo, err = findInforationFromEnv()
+		dbInfo, err = findInformationFromEnv()
 	} else {
 		dbInfo, err = findInformationFromDatastore(ctx)
 	}
