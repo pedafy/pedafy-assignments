@@ -33,4 +33,5 @@ func (a *APIv1) RegisterAPIRoutes(r *mux.Router) {
 
 	v1.Methods(http.MethodGet).Path("/_ah/start").HandlerFunc(a.startupHandler)
 	v1.Methods(http.MethodGet).Path("/").HandlerFunc(a.homeHandler)
+	v1.Methods(http.MethodGet).Path("").HandlerFunc(a.homeHandler)
 }
