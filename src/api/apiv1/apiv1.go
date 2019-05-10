@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/pedafy/pedafy-assignments/database"
-	"github.com/pedafy/pedafy-assignments/database/dblayer"
+	"github.com/pedafy/pedafy-assignments/src/database"
+	"github.com/pedafy/pedafy-assignments/src/database/dblayer"
 )
 
 // APIv1 represents the first version of the API
@@ -29,9 +29,8 @@ func (a *APIv1) connectDatabase(user, pass, url, dbname string) error {
 // the given router
 func (a *APIv1) RegisterAPIRoutes(r *mux.Router) {
 
-	v1 := r.PathPrefix("/v1").Subrouter()
+	v1 := r.PathPrefix("/").Subrouter()
 
 	v1.Methods(http.MethodGet).Path("/_ah/start").HandlerFunc(a.startupHandler)
-	v1.Methods(http.MethodGet).Path("/").HandlerFunc(a.homeHandler)
 	v1.Methods(http.MethodGet).Path("").HandlerFunc(a.homeHandler)
 }

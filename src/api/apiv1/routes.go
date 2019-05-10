@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/pedafy/pedafy-assignments/datastore"
+	"github.com/pedafy/pedafy-assignments/src/datastore"
 	"google.golang.org/appengine"
 )
 

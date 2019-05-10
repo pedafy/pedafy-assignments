@@ -6,8 +6,8 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/pedafy/pedafy-assignments/api"
-	"github.com/pedafy/pedafy-assignments/api/layer"
+	"github.com/pedafy/pedafy-assignments/src/api"
+	"github.com/pedafy/pedafy-assignments/src/api/layer"
 )
 
 type server struct {

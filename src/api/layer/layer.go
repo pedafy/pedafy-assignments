@@ -1,9 +1,9 @@
 package layer
 
 import (
-	"github.com/pedafy/pedafy-assignments/api"
-	"github.com/pedafy/pedafy-assignments/api/apiv1"
-	"github.com/pedafy/pedafy-assignments/version"
+	"github.com/pedafy/pedafy-assignments/src/api"
+	"github.com/pedafy/pedafy-assignments/src/api/apiv1"
+	"github.com/pedafy/pedafy-assignments/src/version"
 )
 
 func NewApiManager(apiVersion string) api.APIHandler {

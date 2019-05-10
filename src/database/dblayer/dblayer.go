@@ -1,9 +1,9 @@
 package dblayer
 
 import (
-	"github.com/pedafy/pedafy-assignments/database"
-	"github.com/pedafy/pedafy-assignments/database/dbv1"
-	"github.com/pedafy/pedafy-assignments/version"
+	"github.com/pedafy/pedafy-assignments/src/database"
+	"github.com/pedafy/pedafy-assignments/src/database/dbv1"
+	"github.com/pedafy/pedafy-assignments/src/version"
 )
 
 // NewDatabaseManager returns the database version corresponding to the
