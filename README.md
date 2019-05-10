@@ -14,3 +14,6 @@ This API will handle basic interaction with the "pedafy-assignment" database
 - [ ] Get all assignments (with possibility to give an order, i.e: "ORDER BY ASC")
 - [ ] Get status by ("id", "name" ...)
 - [ ] Get all status (same, with the possibility to give an order)
+
+## API
+You can checkout the API's documentation right [here](/src/README.md)

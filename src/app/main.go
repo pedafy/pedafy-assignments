@@ -18,7 +18,7 @@ func main() {
 	var srv server
 
 	// TODO: Only in development environments
-	godotenv.Load("../.env")
+	godotenv.Load("../../.env")
 
 	srv.initAPIHandler()
 	srv.registerHandlers()
