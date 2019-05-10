@@ -5,7 +5,7 @@ import (
 	// mysql driver
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
-	"github.com/pedafy/pedafy-assignments/version"
+	"github.com/pedafy/pedafy-assignments/src/version"
 	"google.golang.org/appengine"
 )
 
