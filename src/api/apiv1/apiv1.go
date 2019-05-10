@@ -29,8 +29,11 @@ func (a *APIv1) connectDatabase(user, pass, url, dbname string) error {
 // the given router
 func (a *APIv1) RegisterAPIRoutes(r *mux.Router) {
 
-	v1 := r.PathPrefix("/").Subrouter()
+	r.Methods(http.MethodGet).Path("/_ah/start").HandlerFunc(a.startupHandler)
+	r.Methods(http.MethodGet).Path("/").HandlerFunc(a.homeHandler)
 
-	v1.Methods(http.MethodGet).Path("/_ah/start").HandlerFunc(a.startupHandler)
-	v1.Methods(http.MethodGet).Path("/").HandlerFunc(a.homeHandler)
+	// Status
+	r.Methods(http.MethodGet).Path("/status").HandlerFunc(a.statusGetAllHandler)
+	r.Methods(http.MethodGet).Path("/status/{id:[0-9]+}").HandlerFunc(a.statusGetByIDHandler)
+	r.Methods(http.MethodGet).Path("/status/{name}").HandlerFunc(a.statusGetByNameHandler)
 }

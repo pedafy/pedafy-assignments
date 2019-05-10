@@ -3,6 +3,7 @@ package apiv1
 import (
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/pedafy/pedafy-assignments/src/datastore"
 	"google.golang.org/appengine"
@@ -27,5 +28,5 @@ func (a *APIv1) startupHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *APIv1) homeHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("ploop"))
+	w.Write([]byte(time.Now().Format(time.RFC850)))
 }
