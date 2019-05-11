@@ -17,9 +17,9 @@ func (db *DBV1) ConnectionDatabase(user, pass, dbname, url string) error {
 	var err error
 
 	if appengine.IsDevAppServer() {
-		db.dbc, err = sql.Open("mysql", fmt.Sprintf("%s:%s@tcp([127.0.0.1]:3306)/%s", user, pass, dbname))
+		db.dbc, err = sql.Open("mysql", fmt.Sprintf("%s:%s@tcp([127.0.0.1]:3306)/%s?parseTime=true", user, pass, dbname))
 	} else {
-		db.dbc, err = sql.Open("mysql", fmt.Sprintf("%s:%s@cloudsql(%s)/%s", user, pass, url, dbname))
+		db.dbc, err = sql.Open("mysql", fmt.Sprintf("%s:%s@cloudsql(%s)/%s?parseTime=true", user, pass, url, dbname))
 	}
 
 	if err == nil {
