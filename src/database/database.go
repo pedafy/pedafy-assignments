@@ -15,4 +15,7 @@ type DatabaseHandler interface {
 	GetAllAssignments() ([]Assignments, error)
 	GetAllOrderAssignments(order string) ([]Assignments, error)
 	GetAllByFilterAssignments(filter, value string) ([]Assignments, error)
+	NewAssignment(assignment Assignments) (Assignments, error)
+	ModifyAssignment(assignment Assignments, ID int) (Assignments, error)
+	ArchiveAssignment(ID int) (Assignments, error)
 }

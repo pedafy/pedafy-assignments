@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/pedafy/pedafy-assignments/src/database"
@@ -61,18 +62,90 @@ func (a *APIv1) assignmentsGetFilterHandler(w http.ResponseWriter, r *http.Reque
 	}
 }
 
-func (a *APIv1) assignmentsGetByIDHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte(`{"valid":true}`))
-}
-
 func (a *APIv1) assignmentsNewHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte(`{"valid":true}`))
+	var assignment database.Assignments
+	err := json.NewDecoder(r.Body).Decode(&assignment)
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		w.Write([]byte(`{"error":"malormated data"}`))
+		return
+	}
+
+	newAssignment, err := a.dbHandler.NewAssignment(assignment)
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(http.StatusServiceUnavailable)
+		w.Write([]byte(`{"error":"unavailable"}`))
+	} else {
+		jsonAssignments, err := json.Marshal(newAssignment)
+		if err != nil {
+			log.Println(err.Error())
+			w.WriteHeader(http.StatusServiceUnavailable)
+			w.Write([]byte(`{"error":"unavailable"}`))
+		} else {
+			w.WriteHeader(http.StatusCreated)
+			fmt.Fprintf(w, `{"data":%s}`, jsonAssignments)
+		}
+	}
 }
 
 func (a *APIv1) assignmentsModifyHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte(`{"valid":true}`))
+	vars := mux.Vars(r)
+	IDStr := vars["id"]
+	ID, _ := strconv.Atoi(IDStr)
+	var assignment database.Assignments
+	err := json.NewDecoder(r.Body).Decode(&assignment)
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		w.Write([]byte(`{"error":"malormated data"}`))
+		return
+	}
+
+	modifiedAssignment, err := a.dbHandler.ModifyAssignment(assignment, ID)
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(http.StatusServiceUnavailable)
+		w.Write([]byte(`{"error":"unavailable"}`))
+	} else if modifiedAssignment.ID == 0 {
+		w.WriteHeader(http.StatusGone)
+		w.Write([]byte(`{"error":"unknown data"}`))
+	} else {
+		jsonAssignments, err := json.Marshal(modifiedAssignment)
+		if err != nil {
+			log.Println(err.Error())
+			w.WriteHeader(http.StatusServiceUnavailable)
+			w.Write([]byte(`{"error":"unavailable"}`))
+		} else {
+			w.WriteHeader(http.StatusOK)
+			fmt.Fprintf(w, `{"data":%s}`, jsonAssignments)
+		}
+	}
 }
 
 func (a *APIv1) assignmentsArchiveHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte(`{"valid":true}`))
+	vars := mux.Vars(r)
+	IDStr := vars["id"]
+	ID, _ := strconv.Atoi(IDStr)
+
+	assignment, err := a.dbHandler.ArchiveAssignment(ID)
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(http.StatusServiceUnavailable)
+		w.Write([]byte(`{"error":"unavailable"}`))
+	} else if assignment.ID == 0 {
+		w.WriteHeader(http.StatusGone)
+		w.Write([]byte(`{"error":"unknown data"}`))
+	} else {
+		jsonAssignments, err := json.Marshal(assignment)
+		if err != nil {
+			log.Println(err.Error())
+			w.WriteHeader(http.StatusServiceUnavailable)
+			w.Write([]byte(`{"error":"unavailable"}`))
+		} else {
+			w.WriteHeader(http.StatusOK)
+			fmt.Fprintf(w, `{"data":%s}`, jsonAssignments)
+		}
+	}
 }

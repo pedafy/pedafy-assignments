@@ -22,7 +22,7 @@ func (d *DBV1) GetAllAssignments() ([]database.Assignments, error) {
 
 	for resp.Next() {
 		var curr database.Assignments
-		err = resp.Scan(&curr.ID, &curr.CreatorID, &curr.AssignedID, &curr.StatusID, &curr.TaskID, &curr.CreatedAt, &curr.LastEdit, &curr.DueDate, &curr.CompletionDate)
+		err = resp.Scan(&curr.ID, &curr.CreatorID, &curr.AssignedID, &curr.StatusID, &curr.TaskID, &curr.CreatedAt, &curr.LastEdit, &curr.DueDate, &curr.CompletionDate, &curr.Title, &curr.Description)
 		if err != nil {
 			return nil, err
 		}
@@ -56,7 +56,7 @@ func (d *DBV1) GetAllOrderAssignments(order string) ([]database.Assignments, err
 
 	for resp.Next() {
 		var curr database.Assignments
-		err = resp.Scan(&curr.ID, &curr.CreatorID, &curr.AssignedID, &curr.StatusID, &curr.TaskID, &curr.CreatedAt, &curr.LastEdit, &curr.DueDate, &curr.CompletionDate)
+		err = resp.Scan(&curr.ID, &curr.CreatorID, &curr.AssignedID, &curr.StatusID, &curr.TaskID, &curr.CreatedAt, &curr.LastEdit, &curr.DueDate, &curr.CompletionDate, &curr.Title, &curr.Description)
 		if err != nil {
 			return nil, err
 		}
@@ -80,7 +80,7 @@ func (d *DBV1) GetAllByFilterAssignments(filter, value string) ([]database.Assig
 
 	for resp.Next() {
 		var curr database.Assignments
-		err = resp.Scan(&curr.ID, &curr.CreatorID, &curr.AssignedID, &curr.StatusID, &curr.TaskID, &curr.CreatedAt, &curr.LastEdit, &curr.DueDate, &curr.CompletionDate)
+		err = resp.Scan(&curr.ID, &curr.CreatorID, &curr.AssignedID, &curr.StatusID, &curr.TaskID, &curr.CreatedAt, &curr.LastEdit, &curr.DueDate, &curr.CompletionDate, &curr.Title, &curr.Description)
 		if err != nil {
 			return nil, err
 		}
@@ -91,13 +91,13 @@ func (d *DBV1) GetAllByFilterAssignments(filter, value string) ([]database.Assig
 
 // NewAssignment will add the given assignment to the database and return it
 func (d *DBV1) NewAssignment(assignment database.Assignments) (database.Assignments, error) {
-	query, err := d.dbc.Prepare("INSERT INTO `assignments` (creator_id,assigned_id,status_id,task_id,due_date,last_edit) VALUES(?,?,?,?,?)")
+	query, err := d.dbc.Prepare("INSERT INTO `assignments` (creator_id,assigned_id,status_id,task_id,due_date,last_edit,title,description) VALUES(?,?,?,?,?,?,?,?)")
 	if err != nil {
 		return database.Assignments{}, err
 	}
 	defer query.Close()
 
-	result, err := query.Exec(assignment.CreatorID, assignment.AssignedID, assignment.StatusID, assignment.TaskID, assignment.DueDate, time.Now())
+	result, err := query.Exec(assignment.CreatorID, assignment.AssignedID, assignment.StatusID, assignment.TaskID, assignment.DueDate, time.Now(), assignment.Title, assignment.Description)
 	if err != nil {
 		return database.Assignments{}, err
 	}
@@ -117,14 +117,18 @@ func (d *DBV1) NewAssignment(assignment database.Assignments) (database.Assignme
 
 // ModifyAssignment the whole assignment with the given ID and data
 func (d *DBV1) ModifyAssignment(assignment database.Assignments, ID int) (database.Assignments, error) {
-	sql := "UPDATE `assignments` SET creator_id=?, assigned_id=?, status_id=?, task_id=?, last_edit=?, due_date=?, completion_date=? WHERE id=?"
+	if d.isInDatabase(ID) == false {
+		return database.Assignments{}, nil
+	}
+
+	sql := "UPDATE `assignments` SET creator_id=?, assigned_id=?, status_id=?, task_id=?, last_edit=?, due_date=?, completion_date=?, title=?, description=? WHERE id=?"
 	query, err := d.dbc.Prepare(sql)
 	if err != nil {
 		return database.Assignments{}, err
 	}
 	defer query.Close()
 
-	_, err = query.Exec(assignment.CreatorID, assignment.AssignedID, assignment.StatusID, assignment.TaskID, time.Now(), assignment.DueDate, assignment.CompletionDate, ID)
+	_, err = query.Exec(assignment.CreatorID, assignment.AssignedID, assignment.StatusID, assignment.TaskID, time.Now(), assignment.DueDate, assignment.CompletionDate, assignment.Title, assignment.Description, ID)
 	if err != nil {
 		return database.Assignments{}, err
 	}
@@ -137,18 +141,22 @@ func (d *DBV1) ModifyAssignment(assignment database.Assignments, ID int) (databa
 
 // ArchiveAssignment will directy archive the assignment
 func (d *DBV1) ArchiveAssignment(ID int) (database.Assignments, error) {
-	archiveID, err := d.GetStatusByName("archive")
+	if d.isInDatabase(ID) == false {
+		return database.Assignments{}, nil
+	}
+
+	archiveID, err := d.GetStatusByName("archived")
 	if err != nil {
 		return database.Assignments{}, err
 	}
-	sql := "UPDATE `assignments` SET status_id=?, last_edit=?, WHERE id=?"
+	sql := "UPDATE `assignments` SET status_id=?, last_edit=? WHERE id=?"
 	query, err := d.dbc.Prepare(sql)
 	if err != nil {
 		return database.Assignments{}, err
 	}
 	defer query.Close()
 
-	_, err = query.Exec(strconv.Itoa(archiveID.ID), strconv.Itoa(ID))
+	_, err = query.Exec(strconv.Itoa(archiveID.ID), time.Now(), strconv.Itoa(ID))
 	if err != nil {
 		return database.Assignments{}, err
 	}
@@ -157,4 +165,12 @@ func (d *DBV1) ArchiveAssignment(ID int) (database.Assignments, error) {
 		return database.Assignments{}, err
 	}
 	return assignments[0], nil
+}
+
+func (d *DBV1) isInDatabase(ID int) bool {
+	assignments, _ := d.GetAllByFilterAssignments("id", strconv.Itoa(ID))
+	if len(assignments) == 0 || assignments[0].ID == 0 {
+		return false
+	}
+	return true
 }

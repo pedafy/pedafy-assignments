@@ -13,6 +13,8 @@ type Assignments struct {
 	LastEdit       *time.Time `db:"last_edit" json:"last_edit"`
 	DueDate        *time.Time `db:"due_date" json:"due_date"`
 	CompletionDate *time.Time `db:"completion_date" json:"completion_date"`
+	Title          *string    `db:"title" json:"title"`
+	Description    *string    `db:"description" json:"description"`
 }
 
 // Status refers to the status table
