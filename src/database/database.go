@@ -10,4 +10,9 @@ type DatabaseHandler interface {
 	GetAllStatus() ([]Status, error)
 	GetStatusByID(ID int) (Status, error)
 	GetStatusByName(name string) (Status, error)
+
+	// Assignments
+	GetAllAssignments() ([]Assignments, error)
+	GetAllOrderAssignments(order string) ([]Assignments, error)
+	GetAllByFilterAssignments(filter, value string) ([]Assignments, error)
 }

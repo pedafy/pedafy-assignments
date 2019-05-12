@@ -33,9 +33,7 @@ func (a *APIv1) RegisterAPIRoutes(r *mux.Router) {
 
 	// Assignments
 	r.Methods(http.MethodGet).Path("/assignments").HandlerFunc(a.assignmentsGetAllHandler)
-	r.Methods(http.MethodGet).Path("/assignments").HandlerFunc(a.assignmentsGetOrderHandler).Queries("{sort:(?:due|status|new)}")
-	r.Methods(http.MethodGet).Path("/assignments/{filter}/{value}").HandlerFunc(a.assignmentsGetFilterHandler)
-	r.Methods(http.MethodGet).Path("/assignment/{id:[0-9]+}").HandlerFunc(a.assignmentsGetByIDHandler)
+	r.Methods(http.MethodGet).Path("/assignments/{id_type}/{id:[0-9]+}").HandlerFunc(a.assignmentsGetFilterHandler)
 	r.Methods(http.MethodPut).Path("/assignment").HandlerFunc(a.assignmentsNewHandler)
 	r.Methods(http.MethodPost).Path("/assignment/{id:[0-9]+}").HandlerFunc(a.assignmentsModifyHandler)
 	r.Methods(http.MethodPost).Path("/assignment/archive/{id:[0-9]+}").HandlerFunc(a.assignmentsArchiveHandler)
