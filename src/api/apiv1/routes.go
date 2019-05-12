@@ -24,6 +24,14 @@ func (a *APIv1) startupHandler(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err.Error())
 		}
 	}
+	if a.authToken == "" {
+		ctx := appengine.NewContext(r)
+		var err error
+		a.authToken, err = datastore.FindAPITokenInformation(ctx)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 	w.Write([]byte("ready"))
 }
 

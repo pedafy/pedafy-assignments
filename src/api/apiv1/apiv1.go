@@ -11,6 +11,7 @@ import (
 // APIv1 represents the first version of the API
 type APIv1 struct {
 	dbHandler database.DatabaseHandler
+	authToken string
 }
 
 // RegisterAPIRoutes will register all the API's route to
@@ -25,6 +26,7 @@ func (a *APIv1) RegisterAPIRoutes(r *mux.Router) {
 
 	// Middleware
 	r.Use(a.setJSONResponse)
+	r.Use(a.checkAuth)
 
 	// Status
 	r.Methods(http.MethodGet).Path("/status").HandlerFunc(a.statusGetAllHandler)
@@ -56,5 +58,15 @@ func (a *APIv1) setJSONResponse(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json;charset=utf8")
 		next.ServeHTTP(w, r)
+	})
+}
+
+func (a *APIv1) checkAuth(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if a.authToken != "" && r.Header.Get("Authorization") != a.authToken {
+			http.Error(w, `{"error":"forbidden"}`, http.StatusForbidden)
+		} else {
+			next.ServeHTTP(w, r)
+		}
 	})
 }
