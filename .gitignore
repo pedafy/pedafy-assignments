@@ -13,3 +13,4 @@
 
 # Env files
 .env
+.vscode

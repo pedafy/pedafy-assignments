@@ -8,9 +8,12 @@ This API will handle basic interaction with the "pedafy-assignment" database
 
 
 ## Version 1
-- [ ] Create assignments
-- [ ] Modify assignments
-- [ ] Get assignments by ("id","creator_id"...)
-- [ ] Get all assignments (with possibility to give an order, i.e: "ORDER BY ASC")
-- [ ] Get status by ("id", "name" ...)
-- [ ] Get all status (same, with the possibility to give an order)
+- [x] Create assignments
+- [x] Modify assignments
+- [x] Get assignments by ("id","creator_id"...)
+- [x] Get all assignments (with possibility to give an order, i.e: "ORDER BY ASC")
+- [x] Get status by ("id", "name" ...)
+- [x] Get all status
+
+## API
+You can checkout the API's documentation right [here](/src/README.md)
