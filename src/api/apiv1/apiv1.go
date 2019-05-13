@@ -18,15 +18,21 @@ type APIv1 struct {
 // the given router
 func (a *APIv1) RegisterAPIRoutes(r *mux.Router) {
 
+	// Middleware
+	r.Use(a.setJSONResponse)
+	r.Use(a.checkAuth)
+
+	pedafyRouter := r.PathPrefix("/tig/v1/").Subrouter()
+	a.registerAPIRoutes(r)
+	a.registerAPIRoutes(pedafyRouter)
+}
+
+func (a *APIv1) registerAPIRoutes(r *mux.Router) {
 	// Google App Engine
 	r.Methods(http.MethodGet).Path("/_ah/start").HandlerFunc(a.startupHandler)
 
 	// Home
 	r.Methods(http.MethodGet).Path("/").HandlerFunc(a.homeHandler)
-
-	// Middleware
-	r.Use(a.setJSONResponse)
-	r.Use(a.checkAuth)
 
 	// Status
 	r.Methods(http.MethodGet).Path("/status").HandlerFunc(a.statusGetAllHandler)
@@ -63,7 +69,8 @@ func (a *APIv1) setJSONResponse(next http.Handler) http.Handler {
 
 func (a *APIv1) checkAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if a.authToken != "" && r.Header.Get("Authorization") != a.authToken {
+		if r.URL.RequestURI() != "/" && r.URL.RequestURI() != "/_ah/start" && r.URL.RequestURI() != "/tig/v1/" &&
+			a.authToken != "" && r.Header.Get("Authorization") != a.authToken {
 			http.Error(w, `{"error":"forbidden"}`, http.StatusForbidden)
 		} else {
 			next.ServeHTTP(w, r)
