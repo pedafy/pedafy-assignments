@@ -5,6 +5,7 @@ before_install:
 
 script:
   - go build -o server ./src/app
+  - go vet ./src/api ./src/api/apiv1 ./src/api/layer ./src/app ./src/database ./src/database/dblayer ./src/database/dbv1 ./src/datastore ./src/version
   - go clean
 
 # current version: 1
@@ -12,5 +13,5 @@ deploy:
   provider: gae
   keyfile: pedafy-251c5ecfe2ec.json
   project: pedafy
-  config: ./app/src/app.yaml
+  config: ./src/app/app.yaml
   on: master
