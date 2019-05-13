@@ -8,11 +8,16 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/pedafy/pedafy-assignments/src/api"
 	"github.com/pedafy/pedafy-assignments/src/api/layer"
+	"github.com/pedafy/pedafy-assignments/src/version"
 )
 
 type server struct {
 	APIHandler api.APIHandler
 }
+
+var (
+	defaultVersion = version.GetDefault()
+)
 
 func (s *server) initAPIHandler() {
 	version := os.Getenv("VERSION_API")
