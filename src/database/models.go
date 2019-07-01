@@ -5,8 +5,8 @@ import "time"
 // Assignments refers to the assignments table in the database
 type Assignments struct {
 	ID             int        `db:"id" json:"id"`
-	CreatorID      int        `db:"creator_id" json:"creator_id"`
-	AssignedID     int        `db:"assigned_id" json:"assigned_id"`
+	CreatorID      string     `db:"creator_id" json:"creator_id"`
+	AssignedID     string     `db:"assigned_id" json:"assigned_id"`
 	StatusID       int        `db:"status_id" json:"status_id"`
 	TaskID         int        `db:"task_id" json:"task_id"`
 	CreatedAt      *time.Time `db:"created_at" json:"created_at"`
