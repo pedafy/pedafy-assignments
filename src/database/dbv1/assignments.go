@@ -2,6 +2,7 @@ package dbv1
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 	"time"
 
@@ -69,7 +70,8 @@ func (d *DBV1) GetAllOrderAssignments(order string) ([]database.Assignments, err
 // when the filter is "status_id" and the value is "2" the function
 // will query and return only assignments with a status_id equal to 2
 func (d *DBV1) GetAllByFilterAssignments(filter, value string) ([]database.Assignments, error) {
-	sql := fmt.Sprintf("SELECT * FROM `assignments` WHERE `%s` = %s", filter, value)
+	sql := fmt.Sprintf("SELECT * FROM `assignments` WHERE `%s` = \"%s\"", filter, value)
+	log.Println(sql)
 	resp, err := d.dbc.Query(sql)
 	if err != nil {
 		return nil, err
